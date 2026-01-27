@@ -6,7 +6,7 @@ from dateutil import parser
 s3 = boto3.client('s3')
 sns = boto3.client('sns')
 
-# SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:434514414684:s3-public-access-alerts"
+
 SNS_TOPIC_ARN = os.environ.get("SNS_TOPIC_ARN")
 PUBLIC_GROUPS = [
     "http://acs.amazonaws.com/groups/global/AllUsers",
