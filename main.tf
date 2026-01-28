@@ -24,6 +24,7 @@ resource "random_id" "bucket_suffix" {
 
 resource "aws_s3_bucket" "trail_bucket" {
   bucket = "s3-public-access-trail-bucket-${random_id.bucket_suffix.hex}"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_policy" "trail_bucket_policy" {
