@@ -146,14 +146,20 @@ resource "aws_iam_role_policy_attachment" "lambda_attach" {
 }
 
 # ---------- CREATE THE LAMBDA FUNCTION ----------
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "lambda_function.py"
+  output_path = "lambda_function.zip"
+}
+
 resource "aws_lambda_function" "s3_public_alert" {
   function_name = "s3-security-checker"
   runtime       = "python3.11"
   role          = aws_iam_role.lambda_role.arn
   handler       = "lambda_function.lambda_handler"
 
-  filename         = "lambda_function.zip"
-  source_code_hash = filebase64sha256("lambda_function.zip")
+  filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
 
   timeout = 30
 
