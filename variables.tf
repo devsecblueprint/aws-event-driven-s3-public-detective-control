@@ -8,10 +8,5 @@ variable "aws_region" {
 variable "notification_email" {
   description = "Email address for SNS notifications"
   type        = string
-}
-
-variable "aws_profile" {
-  description = "AWS CLI profile to use"
-  type        = string
-  default = ""
+  default     = "info@devsecblueprint.com"
 }
