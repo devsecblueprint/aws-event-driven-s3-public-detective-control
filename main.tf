@@ -1,29 +1,10 @@
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.0"
-    }
-  }
-}
-
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
 # ---------- ENABLE CLOUDTRAIL ---------- 
 resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
 resource "aws_s3_bucket" "trail_bucket" {
-  bucket = "s3-public-access-trail-bucket-${random_id.bucket_suffix.hex}"
+  bucket        = "s3-public-access-trail-bucket-${random_id.bucket_suffix.hex}"
   force_destroy = true
 }
 
@@ -67,7 +48,7 @@ resource "aws_cloudtrail" "s3_trail" {
   include_global_service_events = false
   is_multi_region_trail         = false
   depends_on                    = [aws_s3_bucket_policy.trail_bucket_policy]
-  
+
   event_selector {
     read_write_type           = "All"
     include_management_events = true
@@ -97,8 +78,8 @@ resource "aws_iam_role" "lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Action    = "sts:AssumeRole"
-      Effect    = "Allow"
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
       Principal = {
         Service = "lambda.amazonaws.com"
       }
@@ -114,8 +95,8 @@ resource "aws_iam_policy" "lambda_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "s3:GetBucketAcl",
           "s3:GetBucketPolicyStatus",
           "s3:GetBucketPublicAccessBlock",
@@ -129,8 +110,8 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = aws_sns_topic.s3_public_alerts.arn
       },
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents"
@@ -177,7 +158,7 @@ resource "aws_cloudwatch_event_rule" "s3_events_rule" {
   description = "Trigger Lambda for S3 bucket public access changes"
 
   event_pattern = jsonencode({
-    source = ["aws.s3"]
+    source      = ["aws.s3"]
     detail-type = ["AWS API Call via CloudTrail"]
     detail = {
       eventSource = ["s3.amazonaws.com"]
